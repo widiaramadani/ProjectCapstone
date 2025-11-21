@@ -1,34 +1,28 @@
 <?php
-
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\Admin\ProductAdminController;
-use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthAdminController;
 
 
-Route::get('/', [ProductController::class,'index'])->name('home');
-Route::get('/products', [ProductController::class,'index'])->name('products.index');
-Route::get('/product/{slug}', [ProductController::class,'show'])->name('products.show');
+// Public (user)
+Route::get('/', [UserController::class, 'home'])->name('home');
+Route::get('/produk', [UserController::class, 'produk'])->name('produk');
+Route::get('/kontak', [UserController::class, 'kontak'])->name('kontak');
+Route::get('/tentang', [UserController::class, 'tentang'])->name('tentang');
 
 
-// Cart
-Route::get('/cart', [CartController::class,'index'])->name('cart.index');
-Route::post('/cart/add/{id}', [CartController::class,'add'])->name('cart.add');
-Route::post('/cart/update/{id}', [CartController::class,'update'])->name('cart.update');
-Route::get('/cart/remove/{id}', [CartController::class,'remove'])->name('cart.remove');
+// Admin Auth
+// Login admin
+Route::get('/loginadmin', [AuthAdminController::class, 'showLogin'])->name('admin.login');
+Route::post('/loginadmin', [AuthAdminController::class, 'login'])->name('admin.login.submit');
 
+// Group protected admin
+Route::middleware('admin')->group(function () {
 
-// Checkout
-Route::get('/checkout', [OrderController::class,'checkoutForm'])->name('checkout.form');
-Route::post('/checkout', [OrderController::class,'placeOrder'])->name('checkout.place');
-Route::get('/checkout/thankyou/{id}', [OrderController::class,'thankyou'])->name('checkout.thankyou');
+    Route::get('/dashboardadmin', function () {
+        return view('admin.dashboardadmin');
+    })->name('admin.dashboardadmin');
 
-
-// Admin (simple, no auth scaffold included here)
-Route::prefix('admin')->group(function (){
-Route::get('/products', [ProductAdminController::class,'index'])->name('admin.products.index');
-Route::get('/orders', [OrderAdminController::class,'index'])->name('admin.orders.index');
+    Route::get('/logoutadmin', [AuthAdminController::class, 'logout'])->name('admin.logout');
 });

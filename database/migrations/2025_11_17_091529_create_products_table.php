@@ -11,15 +11,14 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('role')->default('user'); // admin atau user
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken(); // penting untuk fitur "remember me"
+            $table->text('description')->nullable();
+            $table->decimal('price', 12, 2)->default(0);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -29,8 +28,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('products');
     }
 };
