@@ -24,5 +24,18 @@ Route::middleware('admin')->group(function () {
         return view('admin.dashboardadmin');
     })->name('admin.dashboardadmin');
 
+    //route produk
+    route::get('/produkadmin', [AdminController::class, 'produk'])->name('admin.produkadmin');
+    Route::post('/admin/produk/store', [AdminController::class, 'store'])
+        ->name('admin.produk.store');
+
+    route::get('/transaksiadmin', [AdminController::class, 'transaksi'])->name('admin.transaksiadmin');
+
+
+    route::get('/laporanadmin', [AdminController::class, 'laporan'])->name('admin.laporanadmin');
+
+
     Route::get('/logoutadmin', [AuthAdminController::class, 'logout'])->name('admin.logout');
 });
+
+

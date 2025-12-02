@@ -38,7 +38,9 @@ class AuthAdminController extends Controller
 
     public function logout()
     {
-        session()->forget('admin_logged_in');
-        return redirect()->route('admin.loginadmin');
+    session()->forget('admin_logged_in');
+    session()->forget('admin_email');
+
+    return redirect()->route('admin.login');
     }
 }

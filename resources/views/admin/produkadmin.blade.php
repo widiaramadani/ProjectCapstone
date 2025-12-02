@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('app')
 
 @section('title', 'Produk Makanan')
 
@@ -8,7 +8,7 @@
         <h1 class="page-title">Produk Makanan</h1>
         <div class="breadcrumb">
             <i class="fas fa-home"></i>
-            <a href="{{ route('admin.dashboard') }}">Home</a>
+            <a href="{{ route('admin.dashboardadmin') }}">Home</a>
             <span>></span>
             <span>Produk Makanan</span>
         </div>

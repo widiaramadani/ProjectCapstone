@@ -1,16 +1,16 @@
-@extends('admin.layout.main')
+@extends('app')
 
 @section('content')
 <style>
 </style>
 
-<div class="topbar">
+{{-- <div class="topbar">
     <div>Laporan User</div>
     <div class="topbar-user">
         <i class="fas fa-user-circle"></i>
         <span>{{ $admin_nama }}</span>
     </div>
-</div>
+</div> --}}
 
 <div class="content">
 
@@ -18,7 +18,7 @@
         <h1 class="page-title">Laporan & Masukan User</h1>
         <div class="breadcrumb">
             <i class="fas fa-home"></i>
-            <a href="{{ route('admin.dashboard') }}">Home</a>
+            <a href="{{ route('admin.dashboardadmin') }}">Home</a>
             <span>></span>
             <span>Laporan</span>
         </div>
