@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->decimal('price', 12, 2)->default(0);
-            $table->string('image')->nullable();
-            $table->timestamps();
-        });
+       Schema::table('contact_messages', function (Blueprint $table) {
+        $table->boolean('is_read')->default(false)->after('message');
+    });
+
     }
 
     /**
@@ -30,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('contact_messages', function (Blueprint $table) {
+            //
+        });
     }
 };

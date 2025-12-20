@@ -1,41 +1,81 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthAdminController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\admin\AdminInboxController;
 
-
-// Public (user)
+/*
+|--------------------------------------------------------------------------
+| PUBLIC (USER)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [UserController::class, 'home'])->name('home');
 Route::get('/produk', [UserController::class, 'produk'])->name('produk');
 Route::get('/kontak', [UserController::class, 'kontak'])->name('kontak');
 Route::get('/tentang', [UserController::class, 'tentang'])->name('tentang');
 
+/* CONTACT */
+Route::post('/contact/send', [ContactController::class, 'store'])
+    ->name('contact.send');
 
-// Admin Auth
-// Login admin
-Route::get('/loginadmin', [AuthAdminController::class, 'showLogin'])->name('admin.login');
-Route::post('/loginadmin', [AuthAdminController::class, 'login'])->name('admin.login.submit');
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
+Route::get('/admin/login', function () {
+    return view('admin.auth.login');
+})->name('admin.login');
 
-// Group protected admin
-Route::middleware('admin')->group(function () {
+Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])
+    ->name('admin.login.store');
 
-    Route::get('/dashboardadmin', function () {
-        return view('admin.dashboardadmin');
-    })->name('admin.dashboardadmin');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
 
-    //route produk
-    route::get('/produkadmin', [AdminController::class, 'produk'])->name('admin.produkadmin');
-    Route::post('/admin/produk/store', [AdminController::class, 'store'])
-        ->name('admin.produk.store');
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-    route::get('/transaksiadmin', [AdminController::class, 'transaksi'])->name('admin.transaksiadmin');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
 
+    Route::resource('/products', AdminProductController::class);
 
-    route::get('/laporanadmin', [AdminController::class, 'laporan'])->name('admin.laporanadmin');
+    Route::get('/reports', [AdminReportController::class, 'index'])
+        ->name('reports');
 
+    Route::get('/orders', [AdminOrderController::class, 'index'])
+        ->name('orders.index');
 
-    Route::get('/logoutadmin', [AuthAdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])
+        ->name('orders.show');
+
+            Route::put('/orders/{id}/acc', [AdminOrderController::class, 'acc'])
+        ->name('orders.acc');
+
+    Route::put('/orders/{id}/reject', [AdminOrderController::class, 'reject'])
+        ->name('orders.reject');
+
+    /* INBOX */
+    Route::get('/inbox', [AdminInboxController::class, 'index'])
+        ->name('inbox.index');
+
+    Route::get('/inbox/{message}', [AdminInboxController::class, 'show'])
+        ->name('inbox.show');
+
+    Route::delete('/inbox/{message}', [AdminInboxController::class, 'destroy'])
+        ->name('inbox.destroy');
 });
-
-

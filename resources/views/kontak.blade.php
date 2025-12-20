@@ -334,29 +334,34 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        // Form submission handler
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const message = document.getElementById('message').value;
-            
-            // WhatsApp message
-            const whatsappMessage = `Halo, saya ${name}%0A%0AEmail: ${email}%0ATelepon: ${phone}%0A%0APesan:%0A${message}`;
-            const whatsappURL = `https://wa.me/6281234567890?text=${whatsappMessage}`;
-            
-            // Open WhatsApp
-            window.open(whatsappURL, '_blank');
-            
-            // Success message
-            alert('Terima kasih! Pesan Anda akan dikirim melalui WhatsApp.');
-            
-            // Reset form
-            this.reset();
-        });
-    </script>
+  <script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        message: document.getElementById('message').value,
+    };
+
+    fetch('/contact/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            alert('Pesan berhasil dikirim. Admin akan segera menghubungi Anda.');
+            document.getElementById('contactForm').reset();
+        }
+    });
+});
+</script>
+
 </body>
 </html>

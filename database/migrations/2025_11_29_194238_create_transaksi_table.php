@@ -18,7 +18,12 @@ return new class extends Migration
             $table->string('kode_transaksi')->unique();
             $table->dateTime('tanggal');
             $table->string('nama_pembeli')->nullable();
-            $table->integer('total');
+            $table->string('telepon');
+            $table->string('alamat');
+            $table->string('kecamatan');
+            $table->string('kota');
+            $table->bigInteger('total');
+            $table->integer('ongkir');
             $table->enum('status', ['pending', 'selesai', 'batal'])->default('pending');
             $table->timestamps();
         });

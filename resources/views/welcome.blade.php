@@ -415,9 +415,10 @@
                                     <i class="bi bi-star-fill"></i>
                                 </div>
                             </div>
-                            <button class="btn btn-brown w-100 rounded-pill fw-medium">
-                                <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
-                            </button>
+                                <a href="/produk?buy=1&openCart=true"
+                                class="btn btn-brown w-100 rounded-pill fw-medium">
+                                    <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
+                                </a>
                         </div>
                     </div>
                 </div>
@@ -442,9 +443,10 @@
                                     <i class="bi bi-star-half"></i>
                                 </div>
                             </div>
-                            <button class="btn btn-brown w-100 rounded-pill fw-medium">
-                                <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
-                            </button>
+                          <a href="/produk?buy=2&openCart=true"
+                                class="btn btn-brown w-100 rounded-pill fw-medium">
+                                    <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
+                                </a>
                         </div>
                     </div>
                 </div>
@@ -469,19 +471,21 @@
                                     <i class="bi bi-star"></i>
                                 </div>
                             </div>
-                            <button class="btn btn-brown w-100 rounded-pill fw-medium">
-                                <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
-                            </button>
+                           <a href="/produk?buy=3&openCart=true"
+                                class="btn btn-brown w-100 rounded-pill fw-medium">
+                                    <i class="bi bi-cart-plus me-2"></i>Beli Sekarang
+                                </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center mt-5">
-                <a href="#produk" class="btn btn-brown btn-lg rounded-pill px-5 fw-medium">
-                    Lihat Semua Produk <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-            </div>
+       <div class="text-center mt-5">
+    <a href="/produk" class="btn btn-brown btn-lg rounded-pill px-5 fw-medium">
+        Lihat Semua Produk <i class="bi bi-arrow-right ms-2"></i>
+    </a>
+</div>
+
         </div>
     </section>
 
@@ -546,15 +550,22 @@
         });
 
         // Button buy handler
-        document.querySelectorAll('.btn-brown').forEach(button => {
-            if (button.querySelector('.bi-cart-plus')) {
-                button.addEventListener('click', function() {
-                    const productName = this.closest('.card-body').querySelector('h5').textContent;
-                    alert('Terima kasih! Anda akan membeli: ' + productName + '\n\nFitur pembelian akan segera tersedia.');
-                });
-            }
+   
+    document.querySelectorAll('.btn-buy').forEach(button => {
+        button.addEventListener('click', function () {
+            const productName = this.closest('.card-body').querySelector('h5').textContent;
+            const url = this.dataset.url;
+
+            // optional: simpan produk ke localStorage
+            localStorage.setItem('selectedProduct', productName);
+
+            // redirect ke halaman produk / cart
+            window.location.href = url;
         });
-    </script>
+    });
+</script>
+
+
 </body>
 
 </html>

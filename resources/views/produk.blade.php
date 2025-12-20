@@ -107,6 +107,37 @@
             </div>
         </div>
     </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const buyId = parseInt(params.get('buy'));
+
+    if (buyId) {
+        const product = products.find(p => p.id === buyId);
+
+        if (product) {
+            cart.push({ ...product, quantity: 1 });
+            updateCart();
+
+            if (params.get('openCart') === 'true') {
+                toggleCart();
+            }
+        }
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('openCart') === 'true') {
+        // buka sidebar keranjang
+        document.getElementById('cartSidebar')?.classList.add('active');
+    }
+});
+</script>
+
 
     <div class="modal fade" id="checkoutModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
@@ -213,6 +244,33 @@
         </div>
     </div>
 
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h4 class="fw-bold mb-3">Pembayaran</h4>
+
+      <div class="dana-box mb-3">
+        <div class="dana-logo">DANA</div>
+        <p class="mb-1">Nomor DANA:</p>
+        <h5 class="fw-bold">0812-3456-7890</h5>
+        <p class="mb-0">a/n Kampung Nopia Banyumas</p>
+      </div>
+
+      <h5>Total Bayar</h5>
+      <h3 class="text-brown fw-bold mb-3" id="totalBayarPembayaran">Rp 0</h3>
+
+      <button class="btn btn-success w-100 rounded-pill mb-2" onclick="konfirmasiPembayaran()">
+        <i class="bi bi-check-circle me-2"></i>Saya Sudah Bayar
+      </button>
+
+      <button class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
+        Bayar Nanti
+      </button>
+    </div>
+  </div>
+</div>
+
+
     <div class="modal fade" id="successModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center p-4">
@@ -247,177 +305,322 @@
         </div>
     </div>
 
+    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const products = [
-            { id: 1, name: 'Mini Nopia Gula Aren', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Nopia klasik dengan isian kacang hijau lembut', badge: 'Best Seller', badgeClass: 'badge-bestseller', rating: 5 },
-            { id: 2, name: 'Mini Nopia Pandan', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Perpaduan rasa gurih dan manis dari keju pilihan', badge: 'New', badgeClass: 'badge-new', rating: 4.5 },
-            { id: 3, name: 'Mini Nopia Durian', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Kelezatan coklat premium dengan tekstur renyah', rating: 4.8 },
-            { id: 4, name: 'Nopia Pandan', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Harumnya aroma pandan alami yang menyegarkan', rating: 4.7 },
-            { id: 5, name: 'Nopia Durian', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Sensasi durian asli yang kuat', rating: 4.9 },
-            { id: 6, name: 'Nopia Gula Aren', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Kombinasi berbagai rasa dalam satu paket hemat', badge: 'Hemat', badgeClass: 'badge-bestseller', rating: 5 }
+              {
+        id: 1,
+        name: 'Nopia Original',
+        price: 45000,
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400',
+        description: 'Nopia khas dengan isian kacang hijau klasik yang lembut dan manis',
+        badge: 'Best Seller',
+        badgeClass: 'badge-bestseller',
+        rating: 5
+    },
+    {
+        id: 2,
+        name: 'Nopia Keju',
+        price: 50000,
+        image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400',
+        description: 'Perpaduan tradisi dan modern dengan isian keju',
+        badge: 'New',
+        badgeClass: 'badge-new',
+        rating: 4.5
+    },
+    {
+        id: 3,
+        name: 'Nopia Coklat',
+        price: 48000,
+        image: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=400',
+        description: 'Varian coklat kaya rasa, favorit semua usia',
+        rating: 4.8
+    },
+            { id: 4, name: 'Mini Nopia Gula Aren', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Nopia klasik dengan isian kacang hijau lembut', badge: 'Best Seller', badgeClass: 'badge-bestseller', rating: 5 },
+            { id: 5, name: 'Mini Nopia Pandan', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Perpaduan rasa gurih dan manis dari keju pilihan', badge: 'New', badgeClass: 'badge-new', rating: 4.5 },
+            { id: 6, name: 'Mini Nopia Durian', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Kelezatan coklat premium dengan tekstur renyah', rating: 4.8 },
+            { id: 7, name: 'Nopia Pandan', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Harumnya aroma pandan alami yang menyegarkan', rating: 4.7 },
+            { id: 8, name: 'Nopia Durian', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Sensasi durian asli yang kuat', rating: 4.9 },
+            { id: 9, name: 'Nopia Gula Aren', price: 15000, image: 'https://foodnesia.net/wp-content/uploads/2019/12/kue-nopia-khas-purbalingga-mantap.jpg', description: 'Kombinasi berbagai rasa dalam satu paket hemat', badge: 'Hemat', badgeClass: 'badge-bestseller', rating: 5 }
+            
         ];
 
         let cart = [];
         let ongkosKirim = 0;
         let orderInfo = {};
 
-        function renderProducts() {
-            document.getElementById('productGrid').innerHTML = products.map(p => `
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image-wrapper">
-                            ${p.badge ? `<span class="product-badge ${p.badgeClass}"><i class="bi bi-fire me-1"></i>${p.badge}</span>` : ''}
-                            <img src="${p.image}" alt="${p.name}">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-rating">${'<i class="bi bi-star-fill"></i>'.repeat(Math.floor(p.rating))}${p.rating % 1 ? '<i class="bi bi-star-half"></i>' : ''}</div>
-                            <h5 class="product-title">${p.name}</h5>
-                            <p class="product-description">${p.description}</p>
-                            <div class="mb-3"><span class="price-tag">Rp ${p.price.toLocaleString('id-ID')}</span></div>
-                            <button class="btn btn-brown w-100 rounded-pill fw-semibold" onclick="addToCart(${p.id})">
-                                <i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang
-                            </button>
-                        </div>
-                    </div>
+       function renderProducts() {
+    document.getElementById('productGrid').innerHTML = products.map(p => `
+        <div class="col-lg-4 col-md-6">
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    ${p.badge ? `<span class="product-badge ${p.badgeClass}"><i class="bi bi-fire me-1"></i>${p.badge}</span>` : ''}
+                    <img src="${p.image}" alt="${p.name}">
                 </div>
-            `).join('');
-        }
+                <div class="product-info">
+                    <div class="product-rating">
+                        ${'<i class="bi bi-star-fill"></i>'.repeat(Math.floor(p.rating))}
+                        ${p.rating % 1 ? '<i class="bi bi-star-half"></i>' : ''}
+                    </div>
 
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            const existing = cart.find(item => item.id === id);
-            if (existing) existing.quantity++;
-            else cart.push({ ...product, quantity: 1 });
-            updateCart();
-            showNotif('Produk ditambahkan ke keranjang!');
-        }
+                    <h5 class="product-title">${p.name}</h5>
+                    <p class="product-description">${p.description}</p>
+                    <div class="mb-3">
+                        <span class="price-tag">Rp ${p.price.toLocaleString('id-ID')}</span>
+                    </div>
 
-        function updateCart() {
-            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('cartCount').textContent = total;
-            document.getElementById('cartTotal').textContent = `Rp ${price.toLocaleString('id-ID')}`;
-            
-            if (cart.length === 0) {
-                document.getElementById('cartItems').innerHTML = '<p class="text-center text-muted py-5">Keranjang kosong</p>';
-                document.getElementById('checkoutBtn').disabled = true;
-            } else {
-                document.getElementById('checkoutBtn').disabled = false;
-                document.getElementById('cartItems').innerHTML = cart.map(item => `
-                    <div class="cart-item">
-                        <div class="d-flex gap-3">
-                            <img src="${item.image}" class="cart-item-image" alt="${item.name}">
-                            <div class="flex-grow-1">
-                                <h6 class="fw-semibold mb-1">${item.name}</h6>
-                                <p class="text-brown fw-bold mb-2">Rp ${item.price.toLocaleString('id-ID')}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="quantity-control">
-                                        <button class="quantity-btn" onclick="updateQty(${item.id}, -1)">-</button>
-                                        <span class="fw-semibold">${item.quantity}</span>
-                                        <button class="quantity-btn" onclick="updateQty(${item.id}, 1)">+</button>
-                                    </div>
-                                    <button class="btn btn-sm text-danger" onclick="removeCart(${item.id})">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                    <!-- Tombol Tambah ke Keranjang -->
+                    <button class="btn btn-brown w-100 rounded-pill fw-semibold mb-2" 
+                        onclick="addToCart(${p.id})">
+                        <i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang
+                    </button>
+
+                    <!-- Tombol Beli Sekarang -->
+                    <button class="btn btn-success w-100 rounded-pill fw-semibold" 
+                        onclick="buyNow(${p.id})">
+                        <i class="bi bi-bag-check me-2"></i>Beli Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+      function buyNow(id) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+
+        // kosongkan cart dan isi 1 produk
+        cart = [{ ...product, quantity: 1 }];
+        updateCart();
+
+        // tutup sidebar jika sedang terbuka
+        document.getElementById('cartSidebar').classList.remove('active');
+        document.getElementById('cartOverlay').classList.remove('active');
+
+        // buka checkout
+        openCheckout();
+    }
+
+
+
+    /* ------------------------- KERANJANG ------------------------- */
+    function addToCart(id) {
+        const product = products.find(p => p.id === id);
+        const existing = cart.find(item => item.id === id);
+        if (existing) existing.quantity++;
+        else cart.push({ ...product, quantity: 1 });
+        updateCart();
+        showNotif('Produk ditambahkan ke keranjang!');
+    }
+
+    function updateCart() {
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        document.getElementById('cartCount').textContent = total;
+        document.getElementById('cartTotal').textContent = `Rp ${price.toLocaleString('id-ID')}`;
+
+        if (cart.length === 0) {
+            document.getElementById('cartItems').innerHTML =
+                '<p class="text-center text-muted py-5">Keranjang kosong</p>';
+            document.getElementById('checkoutBtn').disabled = true;
+        } else {
+            document.getElementById('checkoutBtn').disabled = false;
+            document.getElementById('cartItems').innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="d-flex gap-3">
+                        <img src="${item.image}" class="cart-item-image" alt="${item.name}">
+                        <div class="flex-grow-1">
+                            <h6 class="fw-semibold mb-1">${item.name}</h6>
+                            <p class="text-brown fw-bold mb-2">
+                                Rp ${item.price.toLocaleString('id-ID')}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateQty(${item.id}, -1)">−</button>
+                                    <span class="fw-semibold">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateQty(${item.id}, 1)">+</button>
                                 </div>
+
+                                <button class="btn btn-sm text-danger" onclick="removeCart(${item.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                `).join('');
-            }
-        }
-
-        function updateQty(id, change) {
-            const item = cart.find(i => i.id === id);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) removeCart(id);
-                else updateCart();
-            }
-        }
-
-        function removeCart(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCart();
-        }
-
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-            document.getElementById('cartOverlay').classList.toggle('active');
-        }
-
-        function openCheckout() {
-            if (cart.length === 0) return;
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.getElementById('orderSummary').innerHTML = cart.map(item => `
-                <div class="d-flex justify-content-between mb-2">
-                    <span>${item.name} (${item.quantity}x)</span>
-                    <span class="fw-semibold">Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
                 </div>
             `).join('');
-            document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
-            hitungOngkir();
-            toggleCart();
-            new bootstrap.Modal(document.getElementById('checkoutModal')).show();
         }
+    }
 
-        function hitungOngkir() {
-            ongkosKirim = parseInt(document.getElementById('kota').value) || 0;
-            document.getElementById('ongkir').textContent = `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
-            document.getElementById('ongkirSummary').textContent = `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const total = subtotal + ongkosKirim;
-            document.getElementById('totalAkhir').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    function updateQty(id, change) {
+        const item = cart.find(i => i.id === id);
+        if (item) {
+            item.quantity += change;
+            if (item.quantity <= 0) removeCart(id);
+            else updateCart();
         }
+    }
 
-        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const total = subtotal + ongkosKirim;
-            
-            orderInfo = {
-                nama: document.getElementById('nama').value,
-                telepon: document.getElementById('telepon').value,
-                kota: document.getElementById('kota').selectedOptions[0].text.split('(')[0].trim(),
-                kecamatan: document.getElementById('kecamatan').value,
-                alamat: document.getElementById('alamat').value,
-                items: cart,
-                ongkir: ongkosKirim,
-                total: total
-            };
-            
-            document.getElementById('totalBayar').textContent = `Rp ${total.toLocaleString('id-ID')}`;
-            bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
-            setTimeout(() => new bootstrap.Modal(document.getElementById('successModal')).show(), 300);
+    function removeCart(id) {
+        cart = cart.filter(item => item.id !== id);
+        updateCart();
+    }
+
+    function toggleCart() {
+        document.getElementById('cartSidebar').classList.toggle('active');
+        document.getElementById('cartOverlay').classList.toggle('active');
+    }
+
+    /* ------------------------- CHECKOUT ------------------------- */
+    function openCheckout() {
+        if (cart.length === 0) return;
+
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('orderSummary').innerHTML = cart.map(item => `
+            <div class="d-flex justify-content-between mb-2">
+                <span>${item.name} (${item.quantity}x)</span>
+                <span class="fw-semibold">Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+
+        hitungOngkir(); // update ongkir otomatis
+
+        toggleCart(); // tutup sidebar
+
+        new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+    }
+
+    function hitungOngkir() {
+        ongkosKirim = parseInt(document.getElementById('kota').value) || 0;
+
+        document.getElementById('ongkir').textContent = 
+            `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
+        document.getElementById('ongkirSummary').textContent = 
+            `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
+
+        const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+        const total = subtotal + ongkosKirim;
+        document.getElementById('totalAkhir').textContent = 
+            `Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    /* ------------------------- FORM CHECKOUT ------------------------- */
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal + ongkosKirim;
+
+orderInfo = {
+    nama: nama.value,
+    telepon: telepon.value,
+    kota: kota.options[kota.selectedIndex].text,
+    kecamatan: kecamatan.value,
+    alamat: alamat.value,
+    ongkir: ongkosKirim,
+    total: total, // ← INI YANG DIPAKAI
+    items: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+    }))
+};
+
+
+        simpanTransaksi(orderInfo);
+
+    document.getElementById('totalBayarPembayaran').textContent =
+        `Rp ${total.toLocaleString('id-ID')}`;
+
+    bootstrap.Modal.getInstance(checkoutModal).hide();
+
+    setTimeout(() => {
+        new bootstrap.Modal(document.getElementById('paymentModal')).show();
+    }, 300);
+});
+
+function rupiah(angka) {
+    return 'Rp ' + angka.toLocaleString('id-ID');
+}
+
+
+function konfirmasiPembayaran() {
+    // tutup modal pembayaran
+    bootstrap.Modal.getInstance(
+        document.getElementById('paymentModal')
+    ).hide();
+
+    // 🔴 INI BAGIAN PALING PENTING
+    document.getElementById('totalBayar').textContent =
+        rupiah(orderInfo.total);
+
+    setTimeout(() => {
+        new bootstrap.Modal(
+            document.getElementById('successModal')
+        ).show();
+    }, 300);
+}
+
+
+
+function simpanTransaksi(orderInfo) {
+    fetch('http://localhost:8000/api/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(orderInfo)
+    })
+    .then(res => res.json())
+    .then(res => console.log('Masuk DB:', res))
+    .catch(err => console.error(err));
+}
+
+
+
+
+    /* ------------------------- WHATSAPP ------------------------- */
+    function kirimWhatsApp() {
+        let msg = `*PESANAN NOPIA BANYUMAS*%0A%0A`;
+
+        msg += `Nama: ${orderInfo.nama}%0A`;
+        msg += `Telepon: ${orderInfo.telepon}%0A`;
+        msg += `Alamat: ${orderInfo.alamat}, ${orderInfo.kecamatan}, ${orderInfo.kota}%0A%0A`;
+        msg += `*Detail Pesanan:*%0A`;
+
+        orderInfo.items.forEach(item => {
+            msg += `- ${item.name} (${item.quantity}x) = Rp ${(item.price * item.quantity).toLocaleString('id-ID')}%0A`;
         });
 
-        function kirimWhatsApp() {
-            let msg = `*PESANAN NOPIA BANYUMAS*%0A%0A`;
-            msg += `Nama: ${orderInfo.nama}%0A`;
-            msg += `Telepon: ${orderInfo.telepon}%0A`;
-            msg += `Alamat: ${orderInfo.alamat}, ${orderInfo.kecamatan}, ${orderInfo.kota}%0A%0A`;
-            msg += `*Detail Pesanan:*%0A`;
-            orderInfo.items.forEach(item => {
-                msg += `- ${item.name} (${item.quantity}x) = Rp ${(item.price * item.quantity).toLocaleString('id-ID')}%0A`;
-            });
-            msg += `%0AOngkir J&T: Rp ${orderInfo.ongkir.toLocaleString('id-ID')}%0A`;
-            msg += `*TOTAL: Rp ${orderInfo.total.toLocaleString('id-ID')}*%0A%0A`;
-            msg += `Pembayaran via DANA ke: 0812-3456-7890`;
-            window.open(`https://wa.me/6281234567890?text=${msg}`, '_blank');
-        }
+        msg += `%0AOngkir J&T: Rp ${orderInfo.ongkir.toLocaleString('id-ID')}%0A`;
+        msg += `*TOTAL: Rp ${orderInfo.total.toLocaleString('id-ID')}*%0A%0A`;
+        msg += `Pembayaran via DANA: 0812-3456-7890`;
 
-        function showNotif(msg) {
-            const notif = document.createElement('div');
-            notif.className = 'position-fixed top-0 start-50 translate-middle-x mt-5 alert alert-success shadow';
-            notif.style.zIndex = '9999';
-            notif.innerHTML = `<i class="bi bi-check-circle me-2"></i>${msg}`;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 2000);
-        }
+        window.open(`https://wa.me/6281234567890?text=${msg}`, '_blank');
+    }
 
-        renderProducts();
-        updateCart();
-    </script>
+    /* ------------------------- NOTIF ------------------------- */
+    function showNotif(msg) {
+        const notif = document.createElement('div');
+        notif.className = 
+            'position-fixed top-0 start-50 translate-middle-x mt-5 alert alert-success shadow';
+        notif.style.zIndex = '9999';
+        notif.innerHTML = `<i class="bi bi-check-circle me-2"></i>${msg}`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.remove(), 2000);
+    }
+
+    renderProducts();
+    updateCart();
+</script>
 </body>
 </html>
