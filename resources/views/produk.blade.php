@@ -50,6 +50,10 @@
         @media (max-width: 768px) { .cart-sidebar { width: 100%; right: -100%; } }
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('midtrans.clientKey') }}"></script>
+    
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
@@ -108,204 +112,19 @@
         </div>
     </div>
     <script>
+const cartCount = document.getElementById('cartCount');
+const cartTotal = document.getElementById('cartTotal');
+const cartItems = document.getElementById('cartItems');
+const checkoutBtn = document.getElementById('checkoutBtn');
 
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const buyId = parseInt(params.get('buy'));
-
-    if (buyId) {
-        const product = products.find(p => p.id === buyId);
-
-        if (product) {
-            cart.push({ ...product, quantity: 1 });
-            updateCart();
-
-            if (params.get('openCart') === 'true') {
-                toggleCart();
-            }
-        }
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get('openCart') === 'true') {
-        // buka sidebar keranjang
-        document.getElementById('cartSidebar')?.classList.add('active');
-    }
-});
-</script>
-
-
-    <div class="modal fade" id="checkoutModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Checkout Pesanan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="checkoutForm">
-                        <h6 class="fw-bold mb-3">Informasi Pembeli</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Nama Lengkap *</label>
-                                <input type="text" class="form-control" id="nama" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">No. Telepon *</label>
-                                <input type="tel" class="form-control" id="telepon" required>
-                            </div>
-                        </div>
-
-                        <h6 class="fw-bold mb-3">Alamat Pengiriman (Jawa Tengah)</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Kota/Kabupaten *</label>
-                                <select class="form-select" id="kota" required onchange="hitungOngkir()">
-                                    <option value="">Pilih Kota</option>
-                                    <option value="8000">Banyumas / Purwokerto (Rp 8.000)</option>
-                                    <option value="12000">Cilacap (Rp 12.000)</option>
-                                    <option value="10000">Purbalingga (Rp 10.000)</option>
-                                    <option value="12000">Banjarnegara (Rp 12.000)</option>
-                                    <option value="15000">Kebumen (Rp 15.000)</option>
-                                    <option value="20000">Magelang (Rp 20.000)</option>
-                                    <option value="25000">Semarang (Rp 25.000)</option>
-                                    <option value="23000">Salatiga (Rp 23.000)</option>
-                                    <option value="23000">Solo / Surakarta (Rp 23.000)</option>
-                                    <option value="22000">Karanganyar (Rp 22.000)</option>
-                                    <option value="24000">Klaten (Rp 24.000)</option>
-                                    <option value="28000">Kudus (Rp 28.000)</option>
-                                    <option value="30000">Jepara (Rp 30.000)</option>
-                                    <option value="30000">Pati (Rp 30.000)</option>
-                                    <option value="30000">Tegal (Rp 30.000)</option>
-                                    <option value="26000">Pekalongan (Rp 26.000)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Kecamatan *</label>
-                                <input type="text" class="form-control" id="kecamatan" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Alamat Lengkap *</label>
-                                <textarea class="form-control" rows="3" id="alamat" placeholder="Jl. Nama Jalan, No. Rumah, RT/RW" required></textarea>
-                            </div>
-                        </div>
-
-                        <div class="jnt-box">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="jnt-logo mb-2">J&T EXPRESS</div>
-                                    <small>Estimasi pengiriman 2-3 hari kerja</small>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fs-5 fw-bold" id="ongkir">Rp 0</div>
-                                    <small>Ongkos Kirim</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="shipping-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Catatan:</strong> Pengiriman hanya melayani wilayah Jawa Tengah menggunakan J&T Express
-                        </div>
-
-                        <div class="dana-box">
-                            <div class="dana-logo">DANA</div>
-                            <h6 class="mb-2">Metode Pembayaran</h6>
-                            <p class="mb-0 small">Pembayaran melalui DANA E-Wallet</p>
-                        </div>
-
-                        <div class="bg-light p-3 rounded-3 mb-4">
-                            <h6 class="fw-bold mb-3">Ringkasan Pesanan</h6>
-                            <div id="orderSummary"></div>
-                            <div class="d-flex justify-content-between mt-2">
-                                <span>Subtotal Produk:</span>
-                                <span class="fw-semibold" id="subtotal">Rp 0</span>
-                            </div>
-                            <div class="d-flex justify-content-between mt-2">
-                                <span>Ongkos Kirim (J&T):</span>
-                                <span class="fw-semibold" id="ongkirSummary">Rp 0</span>
-                            </div>
-                            <div class="d-flex justify-content-between mt-3 pt-3 border-top">
-                                <h5 class="fw-bold">Total Pembayaran:</h5>
-                                <h5 class="fw-bold text-brown" id="totalAkhir">Rp 0</h5>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-brown w-100 py-3 rounded-pill fw-semibold">
-                            <i class="bi bi-check-circle me-2"></i>Konfirmasi Pesanan
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="paymentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h4 class="fw-bold mb-3">Pembayaran</h4>
-
-      <div class="dana-box mb-3">
-        <div class="dana-logo">DANA</div>
-        <p class="mb-1">Nomor DANA:</p>
-        <h5 class="fw-bold">0812-3456-7890</h5>
-        <p class="mb-0">a/n Kampung Nopia Banyumas</p>
-      </div>
-
-      <h5>Total Bayar</h5>
-      <h3 class="text-brown fw-bold mb-3" id="totalBayarPembayaran">Rp 0</h3>
-
-      <button class="btn btn-success w-100 rounded-pill mb-2" onclick="konfirmasiPembayaran()">
-        <i class="bi bi-check-circle me-2"></i>Saya Sudah Bayar
-      </button>
-
-      <button class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
-        Bayar Nanti
-      </button>
-    </div>
-  </div>
-</div>
-
-
-    <div class="modal fade" id="successModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center p-4">
-                <div class="modal-body">
-                    <div class="success-icon mb-3">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
-                    </div>
-                    <h4 class="fw-bold mb-3">Pesanan Berhasil!</h4>
-                    <div class="dana-box mb-3">
-                        <div class="dana-logo mb-3">DANA</div>
-                        <h6 class="mb-2">Informasi Pembayaran:</h6>
-                        <p class="mb-1"><strong>Nomor DANA: 0812-3456-7890</strong></p>
-                        <p class="mb-1"><strong>a/n: Kampung Nopia Banyumas</strong></p>
-                        <div class="mt-3 pt-3 border-top">
-                            <h5 class="mb-0">Total: <span id="totalBayar">Rp 0</span></h5>
-                        </div>
-                    </div>
-                    <div class="alert alert-info">
-                        <small><strong>Langkah Selanjutnya:</strong><br>
-                        1. Transfer ke nomor DANA di atas<br>
-                        2. Kirim bukti transfer via WhatsApp<br>
-                        3. Pesanan akan diproses setelah pembayaran dikonfirmasi</small>
-                    </div>
-                    <button class="btn btn-success w-100 rounded-pill py-3 mb-2" onclick="kirimWhatsApp()">
-                        <i class="bi bi-whatsapp me-2"></i>Kirim Bukti via WhatsApp
-                    </button>
-                    <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="location.reload()">
-                        Kembali
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
+const nama = document.getElementById('nama');
+const telepon = document.getElementById('telepon');
+const alamat = document.getElementById('alamat');
+const kecamatan = document.getElementById('kecamatan');
+const kota = document.getElementById('kota');
+const ongkir = document.getElementById('ongkir');
+const ongkirSummary = document.getElementById('ongkirSummary');
+const totalAkhir = document.getElementById('totalAkhir');
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -349,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let cart = [];
         let ongkosKirim = 0;
-        let orderInfo = {};
+
 
        function renderProducts() {
     document.getElementById('productGrid').innerHTML = products.map(p => `
@@ -377,11 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <i class="bi bi-cart-plus me-2"></i>Tambah ke Keranjang
                     </button>
 
-                    <!-- Tombol Beli Sekarang -->
-                    <button class="btn btn-success w-100 rounded-pill fw-semibold" 
-                        onclick="buyNow(${p.id})">
-                        <i class="bi bi-bag-check me-2"></i>Beli Sekarang
-                    </button>
+                    
                 </div>
             </div>
         </div>
@@ -408,64 +223,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     /* ------------------------- KERANJANG ------------------------- */
-    function addToCart(id) {
-        const product = products.find(p => p.id === id);
-        const existing = cart.find(item => item.id === id);
-        if (existing) existing.quantity++;
-        else cart.push({ ...product, quantity: 1 });
-        updateCart();
-        showNotif('Produk ditambahkan ke keranjang!');
-    }
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    const existing = cart.find(item => item.id === id);
+    if (existing) existing.quantity++;
+    else cart.push({ ...product, quantity: 1 });
+    updateCart();
+}
+
 
     function updateCart() {
-        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
+    const totalPrice = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
 
-        document.getElementById('cartCount').textContent = total;
-        document.getElementById('cartTotal').textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    cartCount.textContent = totalQty;
+    cartTotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
 
-        if (cart.length === 0) {
-            document.getElementById('cartItems').innerHTML =
-                '<p class="text-center text-muted py-5">Keranjang kosong</p>';
-            document.getElementById('checkoutBtn').disabled = true;
-        } else {
-            document.getElementById('checkoutBtn').disabled = false;
-            document.getElementById('cartItems').innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="d-flex gap-3">
-                        <img src="${item.image}" class="cart-item-image" alt="${item.name}">
-                        <div class="flex-grow-1">
-                            <h6 class="fw-semibold mb-1">${item.name}</h6>
-                            <p class="text-brown fw-bold mb-2">
-                                Rp ${item.price.toLocaleString('id-ID')}
-                            </p>
+    if (!cart.length) {
+        cartItems.innerHTML = '<p class="text-center text-muted">Keranjang kosong</p>';
+        checkoutBtn.disabled = true;
+        return;
+    }
 
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="quantity-control">
-                                    <button class="quantity-btn" onclick="updateQty(${item.id}, -1)">−</button>
-                                    <span class="fw-semibold">${item.quantity}</span>
-                                    <button class="quantity-btn" onclick="updateQty(${item.id}, 1)">+</button>
-                                </div>
-
-                                <button class="btn btn-sm text-danger" onclick="removeCart(${item.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+    checkoutBtn.disabled = false;
+    cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <div class="d-flex gap-3">
+                <img src="${item.image}" class="cart-item-image">
+                <div class="flex-grow-1">
+                    <h6>${item.name}</h6>
+                    <p class="text-brown fw-bold">
+                        Rp ${(item.price * item.quantity).toLocaleString('id-ID')}
+                    </p>
+                    <div class="quantity-control">
+                        <button onclick="updateQty(${item.id},-1)">−</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQty(${item.id},1)">+</button>
                     </div>
                 </div>
-            `).join('');
-        }
-    }
+            </div>
+        </div>
+    `).join('');
+}
 
-    function updateQty(id, change) {
-        const item = cart.find(i => i.id === id);
-        if (item) {
-            item.quantity += change;
-            if (item.quantity <= 0) removeCart(id);
-            else updateCart();
-        }
-    }
+
+    function updateQty(id, c) {
+    const item = cart.find(x => x.id === id);
+    item.quantity += c;
+    if (item.quantity <= 0) cart = cart.filter(x => x.id !== id);
+    updateCart();
+}
 
     function removeCart(id) {
         cart = cart.filter(item => item.id !== id);
@@ -478,149 +285,240 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ------------------------- CHECKOUT ------------------------- */
+
     function openCheckout() {
-        if (cart.length === 0) return;
-
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        document.getElementById('orderSummary').innerHTML = cart.map(item => `
-            <div class="d-flex justify-content-between mb-2">
-                <span>${item.name} (${item.quantity}x)</span>
-                <span class="fw-semibold">Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
-            </div>
-        `).join('');
-
-        document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
-
-        hitungOngkir(); // update ongkir otomatis
-
-        toggleCart(); // tutup sidebar
-
-        new bootstrap.Modal(document.getElementById('checkoutModal')).show();
-    }
-
-    function hitungOngkir() {
-        ongkosKirim = parseInt(document.getElementById('kota').value) || 0;
-
-        document.getElementById('ongkir').textContent = 
-            `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
-        document.getElementById('ongkirSummary').textContent = 
-            `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
-
-        const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-        const total = subtotal + ongkosKirim;
-        document.getElementById('totalAkhir').textContent = 
-            `Rp ${total.toLocaleString('id-ID')}`;
-    }
-
-    /* ------------------------- FORM CHECKOUT ------------------------- */
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    if (cart.length === 0) return;
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    document.getElementById('orderSummary').innerHTML = cart.map(item => `
+        <div class="d-flex justify-content-between mb-2">
+            <span>${item.name} (${item.quantity}x)</span>
+            <span class="fw-semibold">
+                Rp ${(item.price * item.quantity).toLocaleString('id-ID')}
+            </span>
+        </div>
+    `).join('');
+
+    document.getElementById('subtotal').textContent =
+        `Rp ${subtotal.toLocaleString('id-ID')}`;
+
+    hitungOngkir();
+
+    toggleCart();
+
+    new bootstrap.Modal(
+        document.getElementById('checkoutModal')
+    ).show();
+}
+
+ function hitungOngkir() {
+    ongkosKirim = parseInt(kota.value) || 0;
+    ongkir.textContent = `Rp ${ongkosKirim.toLocaleString('id-ID')}`;
+    ongkirSummary.textContent = ongkir.textContent;
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    totalAkhir.textContent =
+        `Rp ${(subtotal + ongkosKirim).toLocaleString('id-ID')}`;
+}
+
+    /* ------------------------- MIDTRANS ------------------------- */
+function prosesMidtrans() {
+    if (!nama.value || !telepon.value || !alamat.value || !kota.value) {
+        alert('Lengkapi data pembeli!');
+        return;
+    }
+
+    const subtotal = cart.reduce((s,i)=>s+i.price*i.quantity,0);
     const total = subtotal + ongkosKirim;
 
-orderInfo = {
-    nama: nama.value,
-    telepon: telepon.value,
-    kota: kota.options[kota.selectedIndex].text,
-    kecamatan: kecamatan.value,
-    alamat: alamat.value,
-    ongkir: ongkosKirim,
-    total: total, // ← INI YANG DIPAKAI
-    items: cart.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price
-    }))
-};
-
-
-        simpanTransaksi(orderInfo);
-
-    document.getElementById('totalBayarPembayaran').textContent =
-        `Rp ${total.toLocaleString('id-ID')}`;
-
-    bootstrap.Modal.getInstance(checkoutModal).hide();
-
-    setTimeout(() => {
-        new bootstrap.Modal(document.getElementById('paymentModal')).show();
-    }, 300);
-});
-
-function rupiah(angka) {
-    return 'Rp ' + angka.toLocaleString('id-ID');
-}
-
-
-function konfirmasiPembayaran() {
-    // tutup modal pembayaran
-    bootstrap.Modal.getInstance(
-        document.getElementById('paymentModal')
-    ).hide();
-
-    // 🔴 INI BAGIAN PALING PENTING
-    document.getElementById('totalBayar').textContent =
-        rupiah(orderInfo.total);
-
-    setTimeout(() => {
-        new bootstrap.Modal(
-            document.getElementById('successModal')
-        ).show();
-    }, 300);
-}
-
-
-
-function simpanTransaksi(orderInfo) {
-    fetch('http://localhost:8000/api/checkout', {
+    fetch('/api/checkout-midtrans', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(orderInfo)
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            nama: nama.value,
+            telepon: telepon.value,
+            alamat: alamat.value,
+            kecamatan: kecamatan.value,
+            kota: kota.options[kota.selectedIndex].text,
+            total: total,
+            items: cart.map(i => ({
+                name: i.name,
+                price: i.price,
+                quantity: i.quantity
+            }))
+        })
     })
     .then(res => res.json())
-    .then(res => console.log('Masuk DB:', res))
-    .catch(err => console.error(err));
+    .then(res => {
+        if (!res.success) {
+            alert(res.message);
+            return;
+        }
+
+        snap.pay(res.snap_token, {
+            onSuccess: () => alert('Pembayaran berhasil'),
+            onPending: () => alert('Menunggu pembayaran'),
+            onError: () => alert('Pembayaran gagal')
+        });
+    });
+}
+
+function tampilSukses(total) {
+    document.getElementById('totalBayar').textContent =
+        `Rp ${total.toLocaleString('id-ID')}`;
+
+    bootstrap.Modal.getInstance(
+        document.getElementById('checkoutModal')
+    ).hide();
+
+    new bootstrap.Modal(
+        document.getElementById('successModal')
+    ).show();
+
+    cart = [];
+    updateCart();
 }
 
 
-
-
-    /* ------------------------- WHATSAPP ------------------------- */
-    function kirimWhatsApp() {
-        let msg = `*PESANAN NOPIA BANYUMAS*%0A%0A`;
-
-        msg += `Nama: ${orderInfo.nama}%0A`;
-        msg += `Telepon: ${orderInfo.telepon}%0A`;
-        msg += `Alamat: ${orderInfo.alamat}, ${orderInfo.kecamatan}, ${orderInfo.kota}%0A%0A`;
-        msg += `*Detail Pesanan:*%0A`;
-
-        orderInfo.items.forEach(item => {
-            msg += `- ${item.name} (${item.quantity}x) = Rp ${(item.price * item.quantity).toLocaleString('id-ID')}%0A`;
-        });
-
-        msg += `%0AOngkir J&T: Rp ${orderInfo.ongkir.toLocaleString('id-ID')}%0A`;
-        msg += `*TOTAL: Rp ${orderInfo.total.toLocaleString('id-ID')}*%0A%0A`;
-        msg += `Pembayaran via DANA: 0812-3456-7890`;
-
-        window.open(`https://wa.me/6281234567890?text=${msg}`, '_blank');
-    }
-
-    /* ------------------------- NOTIF ------------------------- */
-    function showNotif(msg) {
-        const notif = document.createElement('div');
-        notif.className = 
-            'position-fixed top-0 start-50 translate-middle-x mt-5 alert alert-success shadow';
-        notif.style.zIndex = '9999';
-        notif.innerHTML = `<i class="bi bi-check-circle me-2"></i>${msg}`;
-        document.body.appendChild(notif);
-        setTimeout(() => notif.remove(), 2000);
-    }
-
-    renderProducts();
-    updateCart();
+renderProducts();
+updateCart();
 </script>
+
+<div class="modal fade" id="checkoutModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Checkout Pesanan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <h6 class="fw-bold mb-3">Informasi Pembeli</h6>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Nama Lengkap *</label>
+            <input type="text" id="nama" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">No. Telepon *</label>
+            <input type="text" id="telepon" class="form-control">
+          </div>
+        </div>
+
+        <h6 class="fw-bold mb-3">Alamat Pengiriman</h6>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Kota *</label>
+            <select id="kota" class="form-select" onchange="hitungOngkir()">
+               <option value="20000">Kota Semarang</option>
+      <option value="18000">Kota Surakarta</option>
+      <option value="15000">Kota Magelang</option>
+      <option value="16000">Kota Pekalongan</option>
+      <option value="17000">Kota Tegal</option>
+      <option value="14000">Kota Salatiga</option>
+
+      <!-- KABUPATEN -->
+      <option value="8000">Kabupaten Banyumas</option>
+      <option value="12000">Kabupaten Cilacap</option>
+      <option value="10000">Kabupaten Purbalingga</option>
+      <option value="11000">Kabupaten Banjarnegara</option>
+      <option value="13000">Kabupaten Kebumen</option>
+      <option value="14000">Kabupaten Purworejo</option>
+      <option value="15000">Kabupaten Wonosobo</option>
+      <option value="16000">Kabupaten Magelang</option>
+      <option value="17000">Kabupaten Temanggung</option>
+      <option value="18000">Kabupaten Kendal</option>
+      <option value="19000">Kabupaten Demak</option>
+      <option value="20000">Kabupaten Semarang</option>
+      <option value="21000">Kabupaten Grobogan</option>
+      <option value="22000">Kabupaten Blora</option>
+      <option value="23000">Kabupaten Rembang</option>
+      <option value="24000">Kabupaten Pati</option>
+      <option value="25000">Kabupaten Kudus</option>
+      <option value="26000">Kabupaten Jepara</option>
+      <option value="27000">Kabupaten Sragen</option>
+      <option value="28000">Kabupaten Karanganyar</option>
+      <option value="29000">Kabupaten Boyolali</option>
+      <option value="30000">Kabupaten Klaten</option>
+      <option value="31000">Kabupaten Sukoharjo</option>
+      <option value="32000">Kabupaten Wonogiri</option>
+      <option value="33000">Kabupaten Pekalongan</option>
+      <option value="34000">Kabupaten Pemalang</option>
+      <option value="35000">Kabupaten Batang</option>
+      <option value="36000">Kabupaten Brebes</option>
+      <option value="37000">Kabupaten Tegal</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Kecamatan *</label>
+            <input type="text" id="kecamatan" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Alamat Lengkap *</label>
+            <textarea id="alamat" class="form-control"></textarea>
+          </div>
+        </div>
+
+        <div class="jnt-box">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="jnt-logo">J&T EXPRESS</div>
+              <small>Estimasi 2–3 hari</small>
+            </div>
+            <div class="text-end">
+              <div id="ongkir">Rp 0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-light p-3 rounded mb-4">
+          <h6 class="fw-bold mb-3">Ringkasan Pesanan</h6>
+
+          <div id="orderSummary"></div>
+
+          <div class="d-flex justify-content-between mt-2">
+            <span>Subtotal</span>
+            <span id="subtotal">Rp 0</span>
+          </div>
+
+          <div class="d-flex justify-content-between mt-2">
+            <span>Ongkir</span>
+            <span id="ongkirSummary">Rp 0</span>
+          </div>
+
+          <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+            <strong>Total</strong>
+            <strong id="totalAkhir">Rp 0</strong>
+          </div>
+        </div>
+
+        <button class="btn btn-brown w-100 py-3 rounded-pill"
+                onclick="prosesMidtrans()">
+          Bayar Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill text-success fs-1 mb-3 success-icon"></i>
+        <h4 class="fw-bold">Pembayaran Berhasil</h4>
+        <p>Total pembayaran:</p>
+        <h5 id="totalBayar" class="text-brown fw-bold"></h5>
+        <button class="btn btn-brown mt-3 rounded-pill" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>

@@ -19,6 +19,5 @@ use App\Http\Controllers\ContactController;
 
 use App\Http\Controllers\api\CheckoutController;
 
-Route::post('/checkout', [CheckoutController::class, 'store']);
-
 Route::post('/contact/send', [ContactController::class, 'store']);
+Route::post('/checkout-midtrans', [CheckoutController::class, 'store']);

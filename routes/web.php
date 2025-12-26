@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\admin\AdminInboxController;
+use App\Http\Controllers\MidtransController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -79,3 +81,7 @@ Route::middleware(['auth'])
     Route::delete('/inbox/{message}', [AdminInboxController::class, 'destroy'])
         ->name('inbox.destroy');
 });
+
+Route::post('/checkout-midtrans', [MidtransController::class, 'checkoutMidtrans']);
+Route::post('/midtrans/callback', [MidtransController::class, 'callback']);
+
